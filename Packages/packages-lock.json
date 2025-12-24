@@ -133,7 +133,7 @@
     },
     "com.unity.render-pipelines.high-definition-config": {
       "version": "17.0.4",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {
         "com.unity.render-pipelines.core": "17.0.4"
