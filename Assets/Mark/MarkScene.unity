@@ -465,13 +465,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7af8e986baae30f448c78516f530d795, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartPiece: {fileID: 8600408385911309056, guid: 4d8b8f925ea89994ebcc07b116e50e77, type: 3}
+  StartPiece: {fileID: 113040116780555807, guid: c8783602887a84b439052545f7152bbc, type: 3}
   Options:
-  - Prefab: {fileID: 8600408385911309056, guid: 4d8b8f925ea89994ebcc07b116e50e77, type: 3}
+  - Prefab: {fileID: 113040116780555807, guid: c8783602887a84b439052545f7152bbc, type: 3}
     Weight: 0
-  - Prefab: {fileID: 6550768489670695389, guid: 2ed265d48b6dc9247a7d3f9370d22e40, type: 3}
+  - Prefab: {fileID: 4330602656213692414, guid: 466c1b3335bfe9a488860097e8fc9454, type: 3}
     Weight: 0
-  - Prefab: {fileID: 6550768489670695389, guid: b0959d6646e607f49b38e3e152e9c41e, type: 3}
+  - Prefab: {fileID: 5208652084261166711, guid: 2e6896d73a6c37943979c8fd4e6a53b4, type: 3}
     Weight: 0
   PieceCount: 40
   MaxAttemptsPerPiece: 25
