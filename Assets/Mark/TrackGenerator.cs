@@ -3,11 +3,19 @@ using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
+    public enum PieceType
+    {
+        Straight,
+        Left,
+        Right
+    }
+
     [System.Serializable]
     public class PieceOption
     {
         public TrackPiece Prefab;
         [Range(0.01f, 1f)] public float Weight = 1f;
+        public PieceType Type = PieceType.Straight;
     }
 
     [Header("Pieces")]
@@ -15,8 +23,10 @@ public class TrackGenerator : MonoBehaviour
     public List<PieceOption> Options = new();
 
     [Header("Generation")]
-    [Min(1)] public int PieceCount = 40;
+    [Min(1)] public int PieceCount = 50;
     [Min(1)] public int MaxAttemptsPerPiece = 25;
+    [Tooltip("Maximum consecutive turns in the same direction before forcing a different piece type.")]
+    [Min(1)] public int MaxConsecutiveTurns = 2;
 
     [Tooltip("ONLY the layer of your OverlapBounds triggers (e.g. TrackBounds).")]
     public LayerMask OverlapMask;
@@ -32,6 +42,7 @@ public class TrackGenerator : MonoBehaviour
     public bool LogStopReason = true;
 
     private readonly List<TrackPiece> _spawned = new();
+    private readonly List<PieceType> _recentPieceTypes = new();
 
     // Debug info for Gizmos
     private BoxCollider _lastCheckedCollider;
@@ -102,6 +113,15 @@ public class TrackGenerator : MonoBehaviour
                 {
                     _spawned.Add(candidate);
                     attachSocket = candidate.EndSocket;
+                    
+                    // Track the piece type that was placed
+                    PieceType placedType = GetPieceType(prefab);
+                    _recentPieceTypes.Add(placedType);
+                    
+                    // Keep only the last few types for checking consecutive turns
+                    if (_recentPieceTypes.Count > MaxConsecutiveTurns + 1)
+                        _recentPieceTypes.RemoveAt(0);
+                    
                     placed = true;
                     break;
                 }
@@ -120,21 +140,105 @@ public class TrackGenerator : MonoBehaviour
 
     private TrackPiece PickWeighted()
     {
+        // Check for consecutive turns in the same direction
+        PieceType? restrictedType = GetRestrictedPieceType();
+        
+        // Build filtered list with adjusted weights
+        List<(PieceOption option, float weight)> validOptions = new();
         float total = 0f;
+        
         foreach (var o in Options)
-            total += Mathf.Max(0.0001f, o.Weight);
-
+        {
+            if (o.Prefab == null) continue;
+            
+            // If this piece type is restricted (too many consecutive), reduce its weight significantly
+            float weight = o.Weight;
+            if (restrictedType.HasValue && o.Type == restrictedType.Value)
+            {
+                // Heavily penalize this type, but don't completely exclude it
+                weight *= 0.01f;
+            }
+            
+            weight = Mathf.Max(0.0001f, weight);
+            validOptions.Add((o, weight));
+            total += weight;
+        }
+        
+        if (validOptions.Count == 0)
+            return Options[0].Prefab;
+        
         float r = Random.value * total;
         float acc = 0f;
 
-        foreach (var o in Options)
+        foreach (var (option, weight) in validOptions)
         {
-            acc += Mathf.Max(0.0001f, o.Weight);
+            acc += weight;
             if (r <= acc)
-                return o.Prefab;
+                return option.Prefab;
         }
 
-        return Options[0].Prefab;
+        return validOptions[0].option.Prefab;
+    }
+    
+    private PieceType? GetRestrictedPieceType()
+    {
+        if (_recentPieceTypes.Count < MaxConsecutiveTurns)
+            return null;
+        
+        // Check if the last N pieces are all the same turn type
+        PieceType lastType = _recentPieceTypes[_recentPieceTypes.Count - 1];
+        
+        // Only restrict turn types (Left/Right), not straights
+        if (lastType == PieceType.Straight)
+            return null;
+        
+        // Count how many consecutive pieces of this type we have
+        int consecutiveCount = 0;
+        for (int i = _recentPieceTypes.Count - 1; i >= 0; i--)
+        {
+            if (_recentPieceTypes[i] == lastType)
+                consecutiveCount++;
+            else
+                break;
+        }
+        
+        // If we've hit the max consecutive turns, restrict this type
+        if (consecutiveCount >= MaxConsecutiveTurns)
+            return lastType;
+        
+        return null;
+    }
+    
+    private PieceType GetPieceType(TrackPiece piece)
+    {
+        if (piece == null) return PieceType.Straight;
+        
+        // Try to find the piece type from the Options list by matching the prefab
+        // Unity instantiated objects have "(Clone)" appended, so we compare the base prefab
+        foreach (var option in Options)
+        {
+            if (option.Prefab != null)
+            {
+                // Check if this piece was instantiated from this prefab
+                // We can do this by comparing names (removing "(Clone)" suffix)
+                string pieceName = piece.name.Replace("(Clone)", "").Trim();
+                string prefabName = option.Prefab.name.Trim();
+                
+                if (pieceName == prefabName)
+                {
+                    return option.Type;
+                }
+            }
+        }
+        
+        // Fallback: try to determine from name
+        string name = piece.name.ToLower();
+        if (name.Contains("left"))
+            return PieceType.Left;
+        if (name.Contains("right"))
+            return PieceType.Right;
+        
+        return PieceType.Straight;
     }
 
     private void SnapToSocket(TrackPiece piece, Transform targetSocket)
@@ -197,6 +301,7 @@ public class TrackGenerator : MonoBehaviour
             Destroy(TrackParent.GetChild(i).gameObject);
 
         _spawned.Clear();
+        _recentPieceTypes.Clear();
         _lastCheckedCollider = null;
         _lastCheckWasOverlapping = false;
     }

@@ -169,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: cdab36e5bb2fb25499d0342d4424c238, type: 3}
       propertyPath: m_Name
-      value: track-narrow-corner-small 1
+      value: RightTrack
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -214,3 +214,4 @@ MonoBehaviour:
   EndSocket: {fileID: 9102600269734671374}
   Waypoints: []
   OverlapBounds: {fileID: 2533933416731325347}
+  PieceType: 2
