@@ -6,11 +6,13 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     // FSM instance for Game flow
-    //TODO
+    public StateMachine FlowManager { get; private set; }
 
+    // TODO - RACE SETTINGS
+
+    // Game manager setup
     private void Awake()
     {
-        // Singleton initialization
         if (Instance != null)
         {
             Destroy(gameObject);
@@ -19,12 +21,12 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
+        FlowManager = new StateMachine();
+        FlowManager.SwitchState<MenuState>();
+
         // Game manager getting able to travel through scenes
         DontDestroyOnLoad(gameObject);
     }
 
-    void Update()
-    {
-        
-    }
+    void Update() => FlowManager.OnUpdate();
 }
