@@ -22,12 +22,18 @@ public class UI_Follower : MonoBehaviour
     }
     private async Awaitable Init()
     {
-        await Awaitable.NextFrameAsync();
         _target = transform.parent.GetComponent<RectTransform>();
-        _rectTransform.SetParent(_visualContent, true);
-    }
-    
 
+        await Awaitable.NextFrameAsync();
+        _rectTransform.SetParent(_visualContent, true);
+
+    }
+
+    private void Awake()
+    {
+        _rectTransform.position = _target.position;
+        _rectTransform.rotation = _target.rotation;
+    }
     private void Update()
     {
         if (_target == null)
