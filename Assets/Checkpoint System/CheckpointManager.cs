@@ -98,7 +98,8 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             text += $"\n{racer.transform.gameObject.name} | POSITION {racer.racePosition} | LAP {racer.lapCount} | CHECKPOINT {racer.checkpointPosition} | PROGRESS {racer.progress}";
         }
 
-        DEBUG_DRAW_RACERS_STATUS.text = text;
+        if(DEBUG_DRAW_RACERS_STATUS != null)
+            DEBUG_DRAW_RACERS_STATUS.text = text;
     }
     protected void UpdateRacePositions()
     {

@@ -1,65 +1,27 @@
-using System;
-using System.Linq.Expressions;
 using UnityEngine;
 
+using System.Collections.Generic;
 public class UI_Selector : MonoBehaviour
 {
+    public List<GameObject> collection;
 
-    public Member[] members;
-    public int selected = -1;
-
-
-
-    private void Start()
-    {
-        SelectMember(selected);
+    int _selected = -1;
+    public int Selected 
+    { 
+        get { return _selected; } 
+        set { _selected = value; UpdateSelection(); } 
     }
 
-    public void SelectMember(int member)
+    private void UpdateSelection()
     {
-        if (selected == member)
-            member = -1;
-        selected = member;
-        for (int i = 0; i<members.Length;i++)
+        for(int i=0;i<collection.Count; i++)
         {
-            members[i].Set(i==member);
+            collection[i].SetActive(i == _selected);
         }
-        
     }
-
-    [Serializable]
-    public class Member
+    public void SetSelected(int index)
     {
-        public Animator[] objs;
-        public UI_Selector[] selectors; 
-
-        public bool set = false;
-
-        public void Set(bool active)
-        {
-            if (set == active)
-                return;
-            set = active;
-
-            for(int i = 0; i < objs.Length; i++)
-            {
-                objs[i].gameObject.SetActive(active);
-                if (active)
-                {
-                    //_ = Animate(0, "Waiting", objs[i]);
-                    objs[i].PlayInFixedTime("Activated", 0, (float)i / 8f);
-                }
-                else
-                {
-                    objs[i].Play("Waiting");
-                }
-            }
-        if (!active)
-            for (int i = 0;i < selectors.Length; i++)
-            {
-                selectors[i].SelectMember(-1);
-            }
-        }
-
+        Selected = index;
     }
+
 }

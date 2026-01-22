@@ -6,10 +6,7 @@ public class UI_Follower : MonoBehaviour
 {
     protected static RectTransform _visualContent;
     private RectTransform _target;
-    private Image _colorCopy;
     private RectTransform _rectTransform;
-    private TextMeshProUGUI _text;
-
 
     public float linearSpeed = 100;
     public float exponentialSpeed = 6;
@@ -20,8 +17,6 @@ public class UI_Follower : MonoBehaviour
             _visualContent = GameObject.Find("VisualContent").GetComponent<RectTransform>();
 
         _rectTransform = GetComponent<RectTransform>();
-        _colorCopy = transform.parent.parent.GetComponent<Image>();
-        _text = GetComponent<TextMeshProUGUI>();
 
         _ = Init();
     }
@@ -50,9 +45,12 @@ public class UI_Follower : MonoBehaviour
             _rectTransform.position = Vector3.MoveTowards(
                 _rectTransform.position, target,
                 Time.unscaledDeltaTime * linearSpeed);
-        }
 
-        _text.color = _colorCopy.color;
+            Vector3 cur = _rectTransform.localPosition;
+            _rectTransform.localPosition = new Vector3(cur.x, cur.y, 0);
+
+            _rectTransform.rotation = _target.rotation;
+        }
 
         transform.localScale = _target.gameObject.activeInHierarchy ? Vector3.one : Vector3.zero;
     }

@@ -138,11 +138,16 @@ public class CheckpointNode : MonoBehaviour
                 */
             }
 
+
             
 
         }
 
-
+        if (isLapFlag)
+        {
+            Vector3 pos = transform.position + new Vector3(0, transform.localScale.y+1);
+            Gizmos.DrawIcon(pos, "Flag",true);
+        }
 
         
     }
