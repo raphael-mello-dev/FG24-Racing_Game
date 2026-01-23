@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UI_Follower : MonoBehaviour
@@ -8,20 +9,17 @@ public class UI_Follower : MonoBehaviour
 
     public float linearSpeed = 100;
     public float exponentialSpeed = 6;
-    
-    private void Awake()
-    {
-        _rectTransform = GetComponent<RectTransform>();
-        _ = Init();
-        
-        _rectTransform.position = _target.position;
-        _rectTransform.rotation = _target.rotation;
-    }
+
+    bool _activeLastFrame = false;
 
     void Start()
     {
-        if(_visualContent == null)
+        _rectTransform = GetComponent<RectTransform>();
+
+        if (_visualContent == null)
             _visualContent = GameObject.Find("VisualContent").GetComponent<RectTransform>();
+
+        _ = Init();
     }
 
     private async Awaitable Init()
@@ -30,6 +28,9 @@ public class UI_Follower : MonoBehaviour
 
         await Awaitable.NextFrameAsync();
         _rectTransform.SetParent(_visualContent, true);
+
+        _rectTransform.position = _target.position;
+        _rectTransform.rotation = _target.rotation;
     }
 
     private void Update()
@@ -55,7 +56,18 @@ public class UI_Follower : MonoBehaviour
 
             _rectTransform.rotation = _target.rotation;
         }
+        var active = _target.gameObject.activeInHierarchy;
+        if(_activeLastFrame != active)
+        {
+            transform.localScale = active ? Vector3.one : Vector3.zero;
+            if(active)
+            {
+                _rectTransform.position = _target.position;
+                _rectTransform.rotation = _target.rotation;
+            }
+            _activeLastFrame = active;
 
-        transform.localScale = _target.gameObject.activeInHierarchy ? Vector3.one : Vector3.zero;
+        }
+        
     }
 }

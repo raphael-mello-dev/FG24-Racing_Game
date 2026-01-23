@@ -64,7 +64,7 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
         if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
         {
             Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
-            rb.velocity = desiredVelDir * speed;
+            rb.linearVelocity = desiredVelDir * speed;
         }
 
     }

@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static CheckpointManager;
+using static UnityEngine.GraphicsBuffer;
 
 //------------------------------------------------------------------------
 //
@@ -27,12 +31,15 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
     public TextMeshProUGUI DEBUG_DRAW_RACERS_STATUS;
 
+    public Racer DEBUG_FOCUSED_RACER_INFO;
 
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         FindAllNodes();
         AssignRacers(DEBUG_VEHICLES);
+        DEBUG_FOCUSED_RACER_INFO = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
     }
 
 
@@ -43,9 +50,29 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         CheckpointNode[] nodes = 
             FindObjectsByType<CheckpointNode>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
+        if (!Application.isPlaying)
+        {
+            foreach (var node in nodes)
+            {
+                Undo.RecordObject(node.gameObject, "pre");
+            }
+        }
+
+        
+
         Array.Sort(nodes, (a, b) => a.gameObject.name.CompareTo(b.gameObject.name));
 
         AssignCheckpoints(nodes);
+
+        if(!Application.isPlaying)
+        {
+            foreach(var node in  nodes)
+            {
+                EditorUtility.SetDirty(node);
+                EditorUtility.SetDirty(node.gameObject);
+            }
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        }
     }
     public void AssignCheckpoints(CheckpointNode[] nodes, bool autoSetNeighbors = true)
     {
@@ -107,7 +134,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         {
             if(racer.GetCheckpoint().next.HasVehiclePassed(racer.transform))
             {
-                if(racer.GetCheckpoint().isLapFlag)
+                if(racer.GetCheckpoint().next.isLapFlag)
                     racer.lapCount++; //HERE YOU CAN CHECK THE RULES TO SEE IF YOU WIN
 
                 racer.checkpointPosition = racer.GetCheckpoint().next.index;
@@ -160,6 +187,11 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 }
             }
             return result;
+        }
+
+        public override string ToString()
+        {
+            return $"Position: {racePosition} / Lap {lapCount}";
         }
     }
 
