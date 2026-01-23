@@ -1,6 +1,4 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UI_Follower : MonoBehaviour
 {
@@ -10,30 +8,30 @@ public class UI_Follower : MonoBehaviour
 
     public float linearSpeed = 100;
     public float exponentialSpeed = 6;
+    
+    private void Awake()
+    {
+        _rectTransform = GetComponent<RectTransform>();
+        _ = Init();
+        
+        _rectTransform.position = _target.position;
+        _rectTransform.rotation = _target.rotation;
+    }
 
     void Start()
     {
         if(_visualContent == null)
             _visualContent = GameObject.Find("VisualContent").GetComponent<RectTransform>();
-
-        _rectTransform = GetComponent<RectTransform>();
-
-        _ = Init();
     }
+
     private async Awaitable Init()
     {
         _target = transform.parent.GetComponent<RectTransform>();
 
         await Awaitable.NextFrameAsync();
         _rectTransform.SetParent(_visualContent, true);
-
     }
 
-    private void Awake()
-    {
-        _rectTransform.position = _target.position;
-        _rectTransform.rotation = _target.rotation;
-    }
     private void Update()
     {
         if (_target == null)
@@ -60,6 +58,4 @@ public class UI_Follower : MonoBehaviour
 
         transform.localScale = _target.gameObject.activeInHierarchy ? Vector3.one : Vector3.zero;
     }
-
-
 }
