@@ -68,13 +68,13 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
         float lateralSpeed = Vector3.Dot(vel, right);
         rb.AddForce(-right * (lateralSpeed * lateralDamping), ForceMode.Force);
 
-       // rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, angularDamping * Time.fixedDeltaTime);
+       rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, angularDamping * Time.fixedDeltaTime);
 
-       // if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
-       // {
-       //     Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
-       //     rb.linearVelocity = desiredVelDir * speed;
-      //  }
+        if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
+      {
+           Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
+            rb.linearVelocity = desiredVelDir * speed;
+        }
 
     }
 }
