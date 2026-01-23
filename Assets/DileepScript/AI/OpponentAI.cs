@@ -125,20 +125,21 @@ public class OpponentAI : MonoBehaviour
         dir.y = 0;
         if (dir.sqrMagnitude < 0.001f) dir = transform.forward;
 
-        Vector3 right = Vector3.Cross(dir.normalized, Vector3.up);
+        Vector3 right = Vector3.Cross(Vector3.up, dir.normalized);
         return p0 + right * lateralOffsetMeters;
     }
 
 
     float ComputeSteerNormalized(Vector3 worldTarget)
     {
-        Vector3 local = transform.InverseTransformPoint(worldTarget);
-        local.y = 0;
+        Vector3 to = worldTarget - transform.position;
+        to.y = 0;
 
-        float z = Mathf.Max(0.001f, local.z);
-        float x = local.x;
+        Vector3 fwd = transform.forward;
+        fwd.y = 0;
 
-        return Mathf.Clamp(x / (Mathf.Abs(x) + z), -1f, 1f);
+        float angle = Vector3.SignedAngle(fwd.normalized, to.normalized, Vector3.up);
+        return Mathf.Clamp(angle / 45f, -1f, 1f);
     }
 
     float ComputeDesiredSpeed()

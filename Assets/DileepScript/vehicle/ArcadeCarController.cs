@@ -43,6 +43,10 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
         Vector3 fwd = transform.forward;
         float forwardSpeed = Vector3.Dot(vel, fwd);
 
+        if (Time.frameCount % 20 == 0)
+            Debug.Log($"STEER_IN={steer:F2} THR={throttle:F2} speed={rb.linearVelocity.magnitude:F2} angY={rb.angularVelocity.y:F2}");
+
+
         if (speed < maxSpeedMps)
             rb.AddForce(fwd * (throttle * engineForce), ForceMode.Force);
 
@@ -53,19 +57,24 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
         }
 
         float steerScale = Mathf.Clamp01(speed / 5f);
-        rb.AddTorque(Vector3.up * (steer * steerTorque * steerScale), ForceMode.Force);
+        steerScale = Mathf.Max(0.35f, steerScale);
+
+       
+        float yawRateDeg = 140f * steerScale;               
+        float yawThisStep = steer * yawRateDeg * Time.fixedDeltaTime;
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, yawThisStep, 0f));
 
         Vector3 right = transform.right;
         float lateralSpeed = Vector3.Dot(vel, right);
         rb.AddForce(-right * (lateralSpeed * lateralDamping), ForceMode.Force);
 
-        rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, angularDamping * Time.fixedDeltaTime);
+       // rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, angularDamping * Time.fixedDeltaTime);
 
-        if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
-        {
-            Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
-            rb.velocity = desiredVelDir * speed;
-        }
+       // if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
+       // {
+       //     Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
+       //     rb.linearVelocity = desiredVelDir * speed;
+      //  }
 
     }
 }
