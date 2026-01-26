@@ -115,6 +115,10 @@ public class CheckpointNode : MonoBehaviour
         if(!Application.isPlaying)
 
         {
+            if (isLapFlag)
+            {
+                Gizmos.color = Color.green;
+            }
             Gizmos.DrawWireMesh(_displayPlane, 0, transform.position, GetRotation(), transform.localScale);
         }
 

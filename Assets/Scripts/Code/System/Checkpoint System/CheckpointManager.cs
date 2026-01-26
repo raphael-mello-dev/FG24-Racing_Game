@@ -150,6 +150,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
+    [Serializable]
     public class Racer : IComparable<Racer>
     {
         public Transform transform;
