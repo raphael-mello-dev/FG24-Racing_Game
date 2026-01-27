@@ -37,6 +37,9 @@ public class TrackGenerator : MonoBehaviour
     [Header("Output")]
     public Transform TrackParent;
 
+    [Header("Checkpoint / AI Nav")]
+    public bool GenerateNodes = true;
+
     [Header("Debug")]
     public bool DrawLastCheckedBox = true;
     public bool LogStopReason = true;
@@ -51,6 +54,10 @@ public class TrackGenerator : MonoBehaviour
     private void Start()
     {
         Generate();
+
+        if (GenerateNodes)
+            GenerateCheckpointNodes();
+
     }
 
     [ContextMenu("Generate Track")]
@@ -305,6 +312,19 @@ public class TrackGenerator : MonoBehaviour
         _lastCheckedCollider = null;
         _lastCheckWasOverlapping = false;
     }
+
+    [ContextMenu("Generate Checkpoints")]
+    private void GenerateCheckpointNodes()
+    {
+        Transform[] trackPieces = new Transform[_spawned.Count];
+        for (int i = 0; i < trackPieces.Length; i++)
+        {
+            trackPieces[i] = _spawned[i].transform;
+        }
+        if(CheckpointManager.instance != null)
+            CheckpointManager.instance.GenerateCheckpoints(trackPieces);
+    }
+
 
     private void OnDrawGizmos()
     {

@@ -5,10 +5,9 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static CheckpointManager;
-using static UnityEngine.GraphicsBuffer;
-
+using UnityEngine.UIElements;
+using static CheckpointManager.Spline;
+using static UnityEngine.Rendering.HableCurve;
 //------------------------------------------------------------------------
 //
 //  This script was created by Milo. If you have questions or problems, ask her. 
@@ -19,7 +18,8 @@ using static UnityEngine.GraphicsBuffer;
 public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 {
 
-    
+    public GameObject checkpointPrefab;
+    public Transform checkpointParent;
     public CheckpointNode[] checkpoints;
 
     public Transform[] DEBUG_VEHICLES;
@@ -74,6 +74,32 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
     }
+
+    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 3)
+    {
+
+        Spline spline = new Spline(transforms, InterpolationType.Catmull);
+        List<CheckpointNode> checkpoints = new List<CheckpointNode>();
+        for (int i = 0; i < transforms.Length; i++) 
+        {
+            for(int j = 0; j < interpolation; j++)
+            {
+                Vector3 position = spline.GetPointAtIndex(i+ (float)j/(float)interpolation);
+                checkpoints.Add(MakeCheckpoint(position + Vector3.up * 10));
+            }
+        }
+
+        checkpoints.Last().isLapFlag = true;
+
+        AssignCheckpoints(checkpoints.ToArray());
+    }
+    private CheckpointNode MakeCheckpoint(Vector3 position)
+    {
+        var g = Instantiate(checkpointPrefab, checkpointParent);
+        g.transform.position = position; 
+        return g.GetComponent<CheckpointNode>();
+    }
+
     public void AssignCheckpoints(CheckpointNode[] nodes, bool autoSetNeighbors = true)
     {
         this.checkpoints = (CheckpointNode[])nodes.Clone();
@@ -211,6 +237,248 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
     public static Racer GetRacerInfo(Transform self)
     {
         return instance._racerTransformDictonary[self];
+    }
+
+
+
+
+    public struct Spline
+    {
+        Transform[] _tPoints;
+        Vector3[] _points;
+        DistanceMap<Vector3> _map;
+        DistanceMap<Transform> _tMap;
+
+        bool useTransform;
+
+        InterpolationType _type;
+
+        public Spline(Vector3[] points, InterpolationType interpolationType)
+        {
+            _points = points;
+            _tPoints = null;
+            _map = null;
+            _tMap = null;
+
+            _type = interpolationType;
+
+            useTransform = false;
+            UpdateVectorMap();
+        }
+        public Spline(Transform[] points, InterpolationType interpolationType)
+        {
+            _points = null;
+            _tPoints = points;
+            _map = null;
+            _tMap = null;
+
+            _type = interpolationType;
+
+            useTransform = true;
+            UpdateTransformMap();
+        }
+
+        public void UpdateVectorMap()
+        {
+            float[] distance = new float[_points.Length-1];
+
+            for (int i = 0; i < _points.Length; i++)
+            {
+                if (i > 0)
+                {
+                    distance[i - 1] = Vector3.Distance(_points[i - 1], _points[i]);
+                }
+            }
+            _map = new DistanceMap<Vector3>(_points, distance);
+        }
+        public void UpdateTransformMap()
+        {
+            float[] distance = new float[_tPoints.Length-1];
+
+            for (int i = 0; i < _tPoints.Length; i++)
+            {
+                if (i > 0)
+                {
+                    distance[i - 1] = Vector3.Distance(_tPoints[i - 1].position, _tPoints[i].position);
+                }
+            }
+            _tMap = new DistanceMap<Transform>(_tPoints, distance);
+        }
+
+        private Vector3 GetPoint(int index)
+        {
+            index = Mathf.Clamp(index, 0, GetLength() - 1);
+            return useTransform ? _tPoints[index].position : _points[index];
+        }
+        private int GetLength()
+        {
+            return useTransform ? _tPoints.Length : _points.Length;
+        }
+        private float GetCumulative(int i)
+        {
+            return useTransform ? _tMap.GetCumulative(i) : _map.GetCumulative(i);
+        }
+
+        public Vector3 GetPointAtDistance(float d)
+        {
+            float total = GetCumulative(GetLength() - 1);
+            float t = d / total;
+            return GetInterpolation(t);
+        }
+        public Vector3 GetPointAtIndex(float index)
+        {
+            float t = index / (float)GetLength();
+            return GetInterpolation(t);
+        }
+
+
+
+        
+
+        public enum InterpolationType
+        {
+            Linear,
+            Brazier,
+            Catmull
+        }
+
+        private Vector3 GetInterpolation(float t)
+        {
+            return _type switch
+            {
+                InterpolationType.Linear => CatmullInterpolation(t),
+                InterpolationType.Brazier => BrazierInterpolation(t),
+                InterpolationType.Catmull => CatmullInterpolation(t)
+            };
+        }
+
+
+        private Vector3 CatmullInterpolation(float t)
+        {
+            int segments = GetLength() - 1;
+            float scaledT = t * segments;
+
+            int i = Mathf.FloorToInt(scaledT);
+            float localT = scaledT - i;
+
+            // Clamp last segment
+            if (i >= segments)
+            {
+                i = segments - 1;
+                localT = 1f;
+            }
+
+            return CatmullRom(
+                GetPoint(i-1),
+                GetPoint(i),
+                GetPoint(i+1),
+                GetPoint(i+2),
+                localT
+            );
+        }
+        private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+        {
+            float t2 = t * t;
+            float t3 = t2 * t;
+
+            return 0.5f * (
+                (2f * p1) +
+                (-p0 + p2) * t +
+                (2f * p0 - 5f * p1 + 4f * p2 - p3) * t2 +
+                (-p0 + 3f * p1 - 3f * p2 + p3) * t3
+            );
+        }
+
+
+        private Vector3 BrazierInterpolation(float t)
+        {
+            Vector3 point = Vector3.zero;
+            int n = GetLength() - 1;
+            for (int i = 0; i < GetLength(); i++)
+            {
+                float binomial = Mathf.Pow(1 - t, n - i) * Mathf.Pow(t, i) * BinomialCoefficient(n, i);
+                point += binomial * GetPoint(i);
+            }
+            return point;
+        }
+        private int BinomialCoefficient(int n, int k)
+        {
+            int result = 1;
+            for (int i = 1; i <= k; i++)
+                result = result * (n - (k - i)) / i;
+            return result;
+        }
+        public class DistanceMap<T>
+        {
+            private readonly T[] _objects;
+            private readonly float[] _cumulative; // prefix sums
+
+            public DistanceMap(T[] objects, float[] distances)
+            {
+                if (objects == null || distances == null)
+                    throw new ArgumentNullException();
+
+                if (distances.Length != objects.Length - 1)
+                    throw new ArgumentException("Distances length must be one less than objects length.");
+
+                _objects = objects;
+                _cumulative = new float[objects.Length];
+                _cumulative[0] = 0;
+
+                for (int i = 0; i < distances.Length; i++)
+                    _cumulative[i + 1] = _cumulative[i] + distances[i];
+            }
+
+            public T GetObjectAt(float x)
+            {
+                return _objects[GetIndexAt(x)];
+            }
+
+
+            public int GetIndexAt(float x)
+            {
+                if (x <= 0)
+                    return 0;
+
+                if (x >= _cumulative[_cumulative.Length - 1])
+                    return _objects.Length - 1;
+
+
+                int index = Array.BinarySearch(_cumulative, x);
+                if (index < 0)
+                    index = ~index - 1;
+
+                if (index >= _objects.Length)
+                    index = _objects.Length - 1;
+
+                return index;
+            }
+
+            public float GetClosestDistanceAt(float x)
+            {
+                return _cumulative[GetIndexAt(x)];
+            }
+            public float GetCumulative(int index)
+            {
+                index = Mathf.Clamp(index, 0, _cumulative.Length - 1);
+                return _cumulative[index];
+            }
+            public float GetLerpToNext(float x)
+            {
+                if (x <= 0)
+                    return 0;
+
+                if (x >= _cumulative[_cumulative.Length - 1])
+                    return 1;
+
+                int index = GetIndexAt(x);
+                float a = x - _cumulative[index];
+                float b = _cumulative[index + 1] - _cumulative[index];
+
+                return a / b;
+            }
+
+        }
     }
 
 }

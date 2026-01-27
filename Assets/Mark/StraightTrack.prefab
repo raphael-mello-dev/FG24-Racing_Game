@@ -165,7 +165,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
       propertyPath: m_Name
-      value: track-narrow-straight
+      value: StraightTrack
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -183,6 +187,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 113040116780555807}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8217412293470241197}
   m_SourcePrefab: {fileID: 100100000, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
 --- !u!4 &5928094564752555568 stripped
 Transform:
@@ -210,3 +217,25 @@ MonoBehaviour:
   EndSocket: {fileID: 3924147515847039204}
   Waypoints: []
   OverlapBounds: {fileID: 831758264607199492}
+--- !u!64 &8217412293470241197
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6417350423842104458}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -6324012554525015061, guid: d5623bddf5f0ef945b0515fa2acb9df4, type: 3}
