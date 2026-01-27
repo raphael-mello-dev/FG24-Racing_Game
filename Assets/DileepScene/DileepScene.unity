@@ -521,7 +521,7 @@ MonoBehaviour:
   engineForce: 50000
   brakeForce: 30000
   maxSpeedMps: 40
-  steerTorque: 6000
+  steerTorque: 52000
   steerAssist: 0
   lateralDamping: 10
   angularDamping: 5
