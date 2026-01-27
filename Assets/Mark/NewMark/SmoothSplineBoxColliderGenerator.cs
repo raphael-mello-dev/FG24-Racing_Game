@@ -39,8 +39,46 @@ public class SmoothSplineBoxColliderGenerator : MonoBehaviour
     {
         if (spline == null) spline = GetComponent<SplineContainer>();
         UnityEngine.Splines.Spline.Changed += OnSplineChanged;
+        
+        // Rebuild collider list from existing children to handle script reloads
+        RebuildColliderListFromChildren();
         _dirty = true;
     }
+
+    private void OnDestroy()
+    {
+        // Clean up generated colliders when component is destroyed
+        if (collidersRoot != null)
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying) DestroyImmediate(collidersRoot.gameObject);
+            else Destroy(collidersRoot.gameObject);
+#else
+            Destroy(collidersRoot.gameObject);
+#endif
+        }
+        _colliders.Clear();
+    }
+
+    private void RebuildColliderListFromChildren()
+    {
+        _colliders.Clear();
+        if (collidersRoot == null)
+        {
+            var existing = transform.Find("GeneratedSplineColliders");
+            if (existing != null) collidersRoot = existing;
+        }
+        
+        if (collidersRoot != null)
+        {
+            foreach (Transform child in collidersRoot)
+            {
+                var bc = child.GetComponent<BoxCollider>();
+                if (bc != null) _colliders.Add(bc);
+            }
+        }
+    }
+
 
     private void OnDisable()
     {

@@ -24,8 +24,20 @@ public class LoftRoadBehaviour : MonoBehaviour
     [SerializeField]
     private float textureScale = 250f;
 
+    [Header("Skirt Settings")]
+    [SerializeField]
+    private float skirtWidthRatio = 0.1f;
+
+    [SerializeField]
+    private float skirtHeight = -0.1f;
+
     private MeshFilter meshFilter;
     private bool needsRebuild = true;
+
+    // Cached lists to avoid GC allocations
+    private readonly System.Collections.Generic.List<Vector3> vertices = new();
+    private readonly System.Collections.Generic.List<Vector2> uvs = new();
+    private readonly System.Collections.Generic.List<int> triangles = new();
 
     public SplineContainer Spline
     {
@@ -73,6 +85,26 @@ public class LoftRoadBehaviour : MonoBehaviour
         }
     }
 
+    public float SkirtWidthRatio
+    {
+        get => skirtWidthRatio;
+        set
+        {
+            skirtWidthRatio = value;
+            needsRebuild = true;
+        }
+    }
+
+    public float SkirtHeight
+    {
+        get => skirtHeight;
+        set
+        {
+            skirtHeight = value;
+            needsRebuild = true;
+        }
+    }
+
     private void OnEnable()
     {
         meshFilter = GetComponent<MeshFilter>();
@@ -110,9 +142,9 @@ public class LoftRoadBehaviour : MonoBehaviour
         float splineLength = spline.Spline.GetLength();
         int totalSegments = Mathf.Max(2, Mathf.CeilToInt(splineLength * segmentsPerMeter));
 
-        System.Collections.Generic.List<Vector3> vertices = new System.Collections.Generic.List<Vector3>();
-        System.Collections.Generic.List<Vector2> uvs = new System.Collections.Generic.List<Vector2>();
-        System.Collections.Generic.List<int> triangles = new System.Collections.Generic.List<int>();
+        vertices.Clear();
+        uvs.Clear();
+        triangles.Clear();
 
         float currentDistance = 0f;
 
@@ -126,8 +158,7 @@ public class LoftRoadBehaviour : MonoBehaviour
             
             float halfWidth = width * 0.5f;
             
-            float skirtOffset = halfWidth * 0.1f;
-            float skirtHeight = -0.1f;
+            float skirtOffset = halfWidth * skirtWidthRatio;
 
             Vector3 leftSkirt = (Vector3)position + (Vector3)right * (-halfWidth - skirtOffset) + Vector3.up * skirtHeight;
             Vector3 leftEdge = (Vector3)position + (Vector3)right * -halfWidth;
