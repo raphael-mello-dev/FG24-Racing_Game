@@ -11,32 +11,35 @@ public class CarController : MonoBehaviour
     [SerializeField] private LayerMask drivable;
 
     [Header("Suspension Settings")]
-    [SerializeField] private float springStiffness;
-    [SerializeField] private float damperStiffness;
-    [SerializeField] private float springRestLength;
-    [SerializeField] private float springMaxOffset;
-    [SerializeField] private float wheelRadius;
+    [SerializeField] private float springStiffness = 40000f;
+    [SerializeField] private float damperStiffness = 4000f;
+    [SerializeField] private float springRestLength = 0.75f;
+    [SerializeField] private float springMaxOffset = 0.15f;
+    [SerializeField] private float wheelRadius = 0.33f;
 
     [Header("Input")]
     private float moveInput = 0f;
     private float steerInput = 0f;
 
     [Header("Car Settings")]
-    [SerializeField] private float acceleration = 25f;
-    [SerializeField] private float maxSpeed = 100f;
+    [SerializeField] private float acceleration = 5000f;
+    [SerializeField] private float deceleration = 2500f;
+    [SerializeField] private float maxSpeed = 25f;
     [SerializeField] private AnimationCurve powerCurve;
 
-    [SerializeField] private float wheelGripFactor = 1f; // Value between 0 and 1 representing wheel grip
-    [SerializeField] private float wheelMass = 12f;
+    [SerializeField] private AnimationCurve frontWheelGripCurve;
+    [SerializeField] private AnimationCurve rearWheelGripCurve;
+    [SerializeField] private float wheelMass = 20f;
 
     [SerializeField] private float wheelBase = 2.5f;
     [SerializeField] private float rearTrack = 1.5f;
-    [SerializeField] private float turnRadius = 10f;
+    [SerializeField] private float turnRadius = 5f;
 
 
     private float springLength;
     private float ackermannAngleLeft;
     private float ackermannAngleRight;
+    private float wheelGripFactor = 1f; // Value between 0 and 1 representing wheel grip
 
     private Vector3 wheelWorldVelocity = Vector3.zero;
     private Vector3 springDir = Vector3.zero;
@@ -76,10 +79,11 @@ public class CarController : MonoBehaviour
                 Debug.DrawLine(wheel.position, hit.point, Color.red);
 
                 Suspension(hit, i++);
-                if (wheel == wheels[0] || wheel == wheels[1])
-                {
-                    Move(); 
-                }
+                //if (wheel == wheels[0] || wheel == wheels[1])
+                //{
+                //    Move(); 
+                //}
+                Move();
                 ApplyDrag();
             }
             else
@@ -127,15 +131,19 @@ public class CarController : MonoBehaviour
 
         float normalizedSpeed = Mathf.Clamp01(Mathf.Abs(speed) / maxSpeed);
 
-        float availableTorque = powerCurve.Evaluate(normalizedSpeed) * moveInput * acceleration;
+        float availableTorque;
+
+        if (moveInput > 0)
+        {
+            availableTorque = powerCurve.Evaluate(normalizedSpeed) * moveInput * acceleration; 
+        }
+        else
+        {
+            availableTorque = powerCurve.Evaluate(normalizedSpeed) * moveInput * deceleration;
+        }
 
         carRigidbody.AddForceAtPosition(availableTorque * accelDir, wheelPos);
     }
-
-    //private void Decelerate()
-    //{
-    //    //carRigidbody.AddForceAtPosition(deceleration * moveInput * -transform.forward, accelerationPoint.position, ForceMode.Acceleration);
-    //}
 
     private void Steer()
     {
@@ -170,13 +178,32 @@ public class CarController : MonoBehaviour
 
     private void ApplyDrag()
     {
-        float steeringVelocity = Vector3.Dot(wheelWorldVelocity, steeringDir);
+        float steeringVelocity = Vector3.Dot(steeringDir, wheelWorldVelocity);
+
+        if (wheelPos == wheels[0].position || wheelPos == wheels[1].position)
+        {
+            wheelGripFactor = rearWheelGripCurve.Evaluate(steeringVelocity); 
+        }
+        else
+        {
+            wheelGripFactor = frontWheelGripCurve.Evaluate(steeringVelocity);
+        }
 
         float desiredVelChange = -steeringVelocity * wheelGripFactor;
 
         float desiredAcceleration = desiredVelChange / Time.fixedDeltaTime;
 
         carRigidbody.AddForceAtPosition(steeringDir * desiredAcceleration * wheelMass, wheelPos);
+
+
+
+        float forwardVelocity = Vector3.Dot(accelDir, wheelWorldVelocity);
+
+        float desiredForwardVelChange = -forwardVelocity * 0.1f;
+
+        float desiredForwardAcceleration = desiredForwardVelChange / Time.fixedDeltaTime;
+
+        carRigidbody.AddForceAtPosition(accelDir * desiredForwardAcceleration * wheelMass, wheelPos);
     }
 
     #endregion
