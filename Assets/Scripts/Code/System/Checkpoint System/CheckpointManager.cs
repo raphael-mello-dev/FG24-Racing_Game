@@ -37,12 +37,19 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    protected override void Init()
+    {
+        if(hasInit)
+            return;
+        base.Init();
         FindAllNodes();
         AssignRacers(DEBUG_VEHICLES);
         DEBUG_FOCUSED_RACER_INFO = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
+
+        FindFirstObjectByType<StartPoint>().SetPlayers();
     }
-
-
 
     [ContextMenu("Find All Nodes")]
     public void FindAllNodes()
@@ -93,6 +100,25 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
         AssignCheckpoints(checkpoints.ToArray());
     }
+    public void GenerateCheckpoints(Vector3[] positions, int interpolation = 3)
+    {
+
+        Spline spline = new Spline(positions, InterpolationType.Catmull);
+        List<CheckpointNode> checkpoints = new List<CheckpointNode>();
+        for (int i = 0; i < positions.Length; i++)
+        {
+            for (int j = 0; j < interpolation; j++)
+            {
+                Vector3 position = spline.GetPointAtIndex(i + (float)j / (float)interpolation);
+                checkpoints.Add(MakeCheckpoint(position + Vector3.up * 10));
+            }
+        }
+
+        checkpoints.Last().isLapFlag = true;
+
+        AssignCheckpoints(checkpoints.ToArray());
+    }
+
     private CheckpointNode MakeCheckpoint(Vector3 position)
     {
         var g = Instantiate(checkpointPrefab, checkpointParent);

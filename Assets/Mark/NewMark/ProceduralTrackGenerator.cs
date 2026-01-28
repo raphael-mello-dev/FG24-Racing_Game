@@ -55,6 +55,9 @@ public class ProceduralTrackGenerator : MonoBehaviour
     [SerializeField]
     private bool autoRegenerate = true;
 
+    [SerializeField]
+    private bool autoGenerateCheckpoints = true;
+
     private SplineContainer splineContainer;
     private MeshFilter meshFilter;
     private MeshCollider meshCollider;
@@ -73,6 +76,8 @@ public class ProceduralTrackGenerator : MonoBehaviour
     {
         if (autoGenerateOnStart || meshFilter.sharedMesh == null)
             Generate();
+        else
+            RegenerateMesh();
     }
     private void OnEnable() => Initialize();
 
@@ -133,6 +138,17 @@ public class ProceduralTrackGenerator : MonoBehaviour
         if (splineContainer == null || splineContainer.Spline == null) return;
         GenerateRoadMesh();
         UpdateCollider();
+
+        if (Application.isPlaying == true && autoGenerateCheckpoints)
+        {
+            var knots = splineContainer.Spline.Knots;
+            List<Vector3> knotPositions = new();
+            foreach(var knot in knots)
+            {
+                knotPositions.Add(knot.Position);
+            }
+            CheckpointManager.instance.GenerateCheckpoints(knotPositions.ToArray());
+        }
     }
 
     private float NextFloat() => (float)rng.NextDouble();

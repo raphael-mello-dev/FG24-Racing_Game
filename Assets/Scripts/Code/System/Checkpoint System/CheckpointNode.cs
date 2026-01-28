@@ -131,11 +131,7 @@ public class CheckpointNode : MonoBehaviour
             { 
                 Gizmos.color = current ? Color.green : Color.red;
                 Gizmos.DrawWireMesh(_displayPlane, 0, transform.position, GetRotation(), transform.localScale);
-                //Gizmos.DrawSphere(transform.position, 1f);
-
-                Plane _plane = new Plane(GetForwardVector(), transform.position);
-                Vector3 planePoint = _plane.ClosestPointOnPlane(DEBUG_TRANSFORM.transform.position);
-
+                //Gizmos.DrawSphere(transform.position, 1f)
                 /*
                 Gizmos.DrawSphere(planePoint, 1);
                 Gizmos.DrawLine(planePoint, DEBUG_TRANSFORM.transform.position);

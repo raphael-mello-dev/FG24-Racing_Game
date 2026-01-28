@@ -9,7 +9,22 @@ using UnityEngine;
 
 public class SceneOnlySingleton<T> : MonoBehaviour where T : SceneOnlySingleton<T>
 {
-    public static T instance { get; protected set; }
+    public static T _instance;
+    public static T instance { 
+        get
+        {
+            if(_instance == null)
+            {
+                _instance = FindFirstObjectByType<T>();
+                if (_instance == null)
+                    throw new System.Exception("No instance of type exists.");
+
+                if (!_instance.hasInit)
+                    _instance.Init();
+            }
+            return _instance;
+        }
+        protected set => _instance = value; }
 
     protected virtual void Awake()
     {
@@ -22,6 +37,18 @@ public class SceneOnlySingleton<T> : MonoBehaviour where T : SceneOnlySingleton<
         {
             instance = (T)this;
         }
+        if (!hasInit)
+            Init();
+
+    }
+
+    protected bool hasInit = false;
+    protected virtual void Init()
+    {
+        if (hasInit)
+            return;
+
+        hasInit = true;
     }
 
     private void OnDestroy()
