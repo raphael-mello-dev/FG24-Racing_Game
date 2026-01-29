@@ -4,7 +4,7 @@ public class WaypointPath : MonoBehaviour
 {
     public Transform[] Points { get; private set; }
 
-    void Awake() => Cache();
+    void Start() => Cache();
 
     public void Cache()
     {

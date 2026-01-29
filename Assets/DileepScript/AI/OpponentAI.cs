@@ -29,6 +29,9 @@ public class OpponentAI : MonoBehaviour
 
         desiredSpeedJitter = Random.Range(-settings.speedJitter, settings.speedJitter);
         InvokeRepeating(nameof(ChangeJitter), 0.5f, settings.jitterChangeRate);
+
+        if(path == null)
+            path = FindFirstObjectByType<WaypointPath>();
     }
 
     void ChangeJitter()

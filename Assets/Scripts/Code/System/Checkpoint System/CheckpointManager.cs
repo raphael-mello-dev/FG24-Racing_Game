@@ -41,14 +41,20 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
     protected override void Init()
     {
-        if(hasInit)
+        if (hasInit)
             return;
         base.Init();
+
+        
+
         FindAllNodes();
-        AssignRacers(DEBUG_VEHICLES);
+        AssignRacers(FindFirstObjectByType<StartRace>().SpawnRacers());
+
+        if (DEBUG_FOCUSED_RACER == null)
+            DEBUG_FOCUSED_RACER = FindFirstObjectByType<CarController>().transform;
         DEBUG_FOCUSED_RACER_INFO = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
 
-        FindFirstObjectByType<StartPoint>().SetPlayers();
+        
     }
 
     [ContextMenu("Find All Nodes")]
@@ -82,7 +88,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
-    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 3)
+    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 2)
     {
 
         Spline spline = new Spline(transforms, InterpolationType.Catmull);

@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2424347757494078236
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 916023458197185234, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3872009959334272065, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: isPlayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880621059584907081, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      propertyPath: m_Name
+      value: AIPrefab
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 583698699686856508, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 282753274773216957, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4880621059584907081, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 3204841031883946205}
+    - targetCorrespondingSourceObject: {fileID: 4880621059584907081, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: -963963395305075263}
+  m_SourcePrefab: {fileID: 100100000, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+--- !u!1 &7070213321507101781 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4880621059584907081, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+  m_PrefabInstance: {fileID: 2424347757494078236}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3204841031883946205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7070213321507101781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cdae5dc0d94e1d429d90bd4382e7efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  path: {fileID: 0}
+  settings: {fileID: 11400000, guid: 8e58aa973ecda604c8ff2a0bd73642d0, type: 2}
+  carLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  state: 0
+  currentIndex: 0
+  currentLaneOffset: 0
+--- !u!114 &-963963395305075263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7070213321507101781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c021dc478157f8c4289cc85ad7d4c0a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  engineForce: 50000
+  brakeForce: 30000
+  maxSpeedMps: 40
+  steerTorque: 52000
+  steerAssist: 0
+  lateralDamping: 10
+  angularDamping: 5

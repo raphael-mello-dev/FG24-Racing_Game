@@ -67,7 +67,6 @@ public class CarController : MonoBehaviour
         {
             RaycastHit hit;
             float maxLength = springRestLength + springMaxOffset;
-
             if (Physics.Raycast(wheel.position, -wheel.up, out hit, maxLength + wheelRadius, drivable))
             {
                 springDir = wheel.up;
@@ -78,7 +77,7 @@ public class CarController : MonoBehaviour
 
                 Debug.DrawLine(wheel.position, hit.point, Color.red);
 
-                Suspension(hit, i++);
+                Suspension(hit, i);
                 //if (wheel == wheels[0] || wheel == wheels[1])
                 //{
                 //    Move(); 
@@ -88,8 +87,10 @@ public class CarController : MonoBehaviour
             }
             else
             {
+                wheelMeshes[i].localPosition = Vector3.down * maxLength + (wheelRadius * Vector3.up);
                 Debug.DrawLine(wheel.position, wheel.position + (wheelRadius + maxLength) * -wheel.up, Color.green);
             }
+            i++;
         }
     }
 
@@ -121,8 +122,8 @@ public class CarController : MonoBehaviour
 
         float springForce = (offset * springStiffness) - (velocity * damperStiffness);
         carRigidbody.AddForceAtPosition(springForce * springDir, wheelPos);
+        wheelMeshes[i].position = hit.point + (wheelRadius * Vector3.up);
 
-        wheelMeshes[i].position = hit.point + (wheelRadius * springDir);
     }
 
     private void Move()
