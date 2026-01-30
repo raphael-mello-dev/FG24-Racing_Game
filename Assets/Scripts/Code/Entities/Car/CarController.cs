@@ -48,9 +48,11 @@ public class CarController : MonoBehaviour
     private Vector3 accelDir = Vector3.zero;
     private Vector3 wheelPos = Vector3.zero;
 
-    
+    private InputManager InputManager;
 
     #region Unity Functions
+
+    private void Awake() => InputManager = new InputManager();
 
     private void Start()
     {
@@ -62,6 +64,9 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState"
+            && RaceSettingsManager.Instance.CurrentMode != RaceMode.Training) return;
+
         int i = 0;
 
         foreach (Transform wheel in wheels)
@@ -107,8 +112,10 @@ public class CarController : MonoBehaviour
 
     private void GetPlayerInput()
     {
-        moveInput = Input.GetAxis("Vertical");
-        steerInput = Input.GetAxis("Horizontal");
+        //moveInput = Input.GetAxis("Vertical");
+        //steerInput = Input.GetAxis("Horizontal");
+        moveInput = InputManager.Move;
+        steerInput = InputManager.Steer;
     }
 
     #endregion

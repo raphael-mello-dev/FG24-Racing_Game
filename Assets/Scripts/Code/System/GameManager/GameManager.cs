@@ -1,4 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public enum Scenes
+{
+    MainMenu = 0,
+    Gameplay = 1
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -7,8 +14,6 @@ public class GameManager : MonoBehaviour
 
     // FSM instance for Game flow
     public StateMachine StateManager { get; private set; }
-
-    // TODO - RACE SETTINGS
 
     // Game manager setup
     private void Awake()
@@ -29,4 +34,7 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() => StateManager.OnUpdate();
+
+    // Function for loading desired scene
+    public void LoadScene(Scenes scene) => SceneManager.LoadScene((int)scene);
 }

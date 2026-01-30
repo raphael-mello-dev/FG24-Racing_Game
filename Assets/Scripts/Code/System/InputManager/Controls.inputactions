@@ -22,19 +22,10 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Accelerate",
+                    "name": "Move",
                     "type": "Value",
-                    "id": "9a39aec4-623d-4e74-9d0b-7f830be38577",
-                    "expectedControlType": "Double",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Brake-Reverse",
-                    "type": "Value",
-                    "id": "0f5c5708-bd4f-4332-93b3-9aaa93e64c84",
-                    "expectedControlType": "Integer",
+                    "id": "b3aaaa45-6e63-4f60-b6ca-10891de124a0",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -42,7 +33,7 @@
                 {
                     "name": "Steer",
                     "type": "Value",
-                    "id": "b3aaaa45-6e63-4f60-b6ca-10891de124a0",
+                    "id": "73f30f81-0dd7-4ada-a2de-005eb34d1381",
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
@@ -68,17 +59,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "d72b9619-1dc1-47f6-9788-3f02a411b0bb",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Brake-Reverse",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "44d7c684-79f6-4eb2-a83b-c4433e52c842",
@@ -113,19 +93,41 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "4823aea9-e016-431a-8682-8fdc1bf6d31d",
+                    "name": "1D Axis",
+                    "id": "6db5188a-e6b0-47e2-87f6-bef3348201d2",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "1aeaf119-c0ee-42df-a75b-dea4eca70bb2",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "fba18141-d1ef-4300-8ba8-49307068dd80",
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Accelerate",
+                    "action": "Move",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "1D Axis",
-                    "id": "6db5188a-e6b0-47e2-87f6-bef3348201d2",
+                    "id": "64e32e59-cddc-4394-9d9e-ef9d8e636c12",
                     "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
@@ -136,7 +138,7 @@
                 },
                 {
                     "name": "negative",
-                    "id": "1aeaf119-c0ee-42df-a75b-dea4eca70bb2",
+                    "id": "a995a4f5-a071-4d1d-8604-b73a1aca5dd7",
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
@@ -147,7 +149,7 @@
                 },
                 {
                     "name": "positive",
-                    "id": "fba18141-d1ef-4300-8ba8-49307068dd80",
+                    "id": "8644778b-90f0-414e-bc00-4b9d3025c676",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
