@@ -9,33 +9,33 @@ public class ProceduralTrackGenerator : MonoBehaviour
 {
     [Header("Track Shape")]
     [SerializeField, Range(8, 25), Tooltip("Number of corners/sections")]
-    private int cornerCount = 14;
+    private int cornerCount = 15;
 
     [SerializeField, Tooltip("Overall track size")]
     private float trackSize = 150f;
 
     [SerializeField, Range(0f, 1f), Tooltip("Track shape randomness")]
-    private float shapeRandomness = 0.7f;
+    private float shapeRandomness = 0.5f;
 
     [SerializeField, Tooltip("Seed (0 = random each time)")]
     private int seed = 0;
 
     [Header("Circuit Features")]
     [SerializeField, Range(0f, 1f), Tooltip("Long straight frequency")]
-    private float straights = 0.35f;
+    private float straights = 1f;
 
     [SerializeField, Range(0f, 1f), Tooltip("Hairpin turn frequency")]
-    private float hairpins = 0.2f;
+    private float hairpins = 0f;
 
     [SerializeField, Range(0f, 1f), Tooltip("Chicane (S-curve) frequency")]
-    private float chicanes = 0.25f;
+    private float chicanes = 0f;
 
     [SerializeField, Range(0f, 1f), Tooltip("How tight corners can be")]
-    private float cornerTightness = 0.5f;
+    private float cornerTightness = 0f;
 
     [Header("Road Settings")]
     [SerializeField]
-    private float width = 12f;
+    private float width = 20f;
 
     [SerializeField]
     private int resolution = 5;
@@ -125,8 +125,10 @@ public class ProceduralTrackGenerator : MonoBehaviour
         if (splineContainer == null) splineContainer = GetComponent<SplineContainer>();
         if (meshFilter == null) meshFilter = GetComponent<MeshFilter>();
 
-        int actualSeed = seed == 0 ? System.Environment.TickCount : seed;
+        int actualSeed = seed == 0 ? UnityEngine.Random.Range(int.MinValue, int.MaxValue) : seed;
         rng = new System.Random(actualSeed);
+        
+        Debug.Log($"[ProceduralTrackGenerator] Generated track with seed: {actualSeed}");
 
         GenerateCircuit();
         RegenerateMesh();
