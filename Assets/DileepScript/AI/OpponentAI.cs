@@ -41,6 +41,8 @@ public class OpponentAI : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
+
         if (path == null || settings == null || path.Count < 2 || car == null) return;
 
         UpdateWaypointProgress();
@@ -74,7 +76,7 @@ public class OpponentAI : MonoBehaviour
 
         car.SetInputs(steerSmoothed, throttle, brake);
 
-        Debug.Log($"pos={transform.position} speed={rb.linearVelocity.magnitude:F2}");
+        //Debug.Log($"pos={transform.position} speed={rb.linearVelocity.magnitude:F2}");
 
     }
 

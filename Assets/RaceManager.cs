@@ -1,21 +1,21 @@
-using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
+
 public class RaceManager : SceneOnlySingleton<RaceManager>
 {
     
     //Racers
     public int playerRacers = 1;
-    public int aiRacers = 2;
-    public int racerCount { 
-        get => playerRacers + aiRacers;
-        private set { } 
-    }
+
+    public int racerCount { get; private set; } 
     private int maxPlayerCount = 1;
 
     public GameObject playerPrefab;
     public GameObject AiPrefab;
+
+    public GameObject trackPrefab;
+    public GameObject customTrackPrefab;
 
     public Vector3 racerStartDistance = new Vector3(4,4, 2);
 
@@ -23,12 +23,28 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
 
     public int lapCount = 1;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        
+        if (RaceSettingsManager.Instance.CurrentMode == RaceMode.Custom)
+        {
+            trackPrefab.SetActive(false);
+            customTrackPrefab.SetActive(true);
+        }
+        else
+        {
+            trackPrefab.SetActive(true);
+            customTrackPrefab.SetActive(false);
+        }
+    }
 
     public Transform[] SpawnRacers()
     {
         playerRacers = Mathf.Clamp(playerRacers, 0, maxPlayerCount);    
+        racerCount = playerRacers + RaceSettingsManager.Instance.CarsOpAmount;
 
-        Transform[] list = new Transform[playerRacers + aiRacers];
+        Transform[] list = new Transform[racerCount];
 
         for (int i = 0; i < list.Length; i++)
         {

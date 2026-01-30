@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public enum InputMap
@@ -14,8 +15,7 @@ public class InputManager
 
     #region Car inputs
 
-    public float Acccelerate => controls.Gameplay.Accelerate.ReadValue<float>();
-    public float Reverse => controls.Gameplay.BrakeReverse.ReadValue<float>();
+    public float Move => controls.Gameplay.Move.ReadValue<float>();
     public float Steer => controls.Gameplay.Steer.ReadValue<float>();
     public float Boost => controls.Gameplay.Boost.ReadValue<float>();
     public float HandBrake => controls.Gameplay.HandBrake.ReadValue<float>();
@@ -28,7 +28,7 @@ public class InputManager
     public InputManager()
     {
         controls = new Controls();
-        controls.Menu.Enable();
+        controls.Gameplay.Enable();
 
         controls.Gameplay.Pause.performed += PausePerformed;
         controls.Pause.Unpause.performed += UnpausePerformed;
@@ -56,12 +56,14 @@ public class InputManager
     private void PausePerformed(InputAction.CallbackContext context)
     {
         GameManager.Instance.StateManager.SwitchState<PauseState>();
-        OnPause?.Invoke();
+        SwitchInputMap(InputMap.Pause);
+        //OnPause?.Invoke();
     }
 
     private void UnpausePerformed(InputAction.CallbackContext context)
     {
         GameManager.Instance.StateManager.SwitchState<GameplayState>();
-        OnUnpause?.Invoke();
+        SwitchInputMap(InputMap.Gameplay);
+        //OnUnpause?.Invoke();
     }
 }
