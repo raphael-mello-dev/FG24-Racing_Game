@@ -5,9 +5,9 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 using static CheckpointManager.Spline;
-using static UnityEngine.Rendering.HableCurve;
+
 //------------------------------------------------------------------------
 //
 //  This script was created by Milo. If you have questions or problems, ask her. 
@@ -25,6 +25,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
     public Transform[] DEBUG_VEHICLES;
 
     public Racer[] vehicles;
+    public List<Racer> winners = new();
     private Dictionary<Transform, Racer> _racerTransformDictonary = new Dictionary<Transform, Racer>();
 
     public Transform DEBUG_FOCUSED_RACER;
@@ -48,7 +49,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         
 
         FindAllNodes();
-        AssignRacers(FindFirstObjectByType<StartRace>().SpawnRacers());
+        AssignRacers(FindFirstObjectByType<RaceManager>().SpawnRacers());
 
         if (DEBUG_FOCUSED_RACER == null)
             DEBUG_FOCUSED_RACER = FindFirstObjectByType<CarController>().transform;
@@ -102,7 +103,11 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             }
         }
 
-        checkpoints.Last().isLapFlag = true;
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            checkpoints[i].gameObject.name = "Checkpoint - " + i;
+        }
+        checkpoints.First().isLapFlag = true;
 
         AssignCheckpoints(checkpoints.ToArray());
     }
@@ -119,8 +124,12 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 checkpoints.Add(MakeCheckpoint(position + Vector3.up * 10));
             }
         }
+        for(int i = 0; i < checkpoints.Count; i++)
+        {
+            checkpoints[i].gameObject.name = "Checkpoint - " + i;
+        }
 
-        checkpoints.Last().isLapFlag = true;
+        checkpoints.First().isLapFlag = true;
 
         AssignCheckpoints(checkpoints.ToArray());
     }
@@ -176,15 +185,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
         //Possibly add a timer so this isn't checked every frame.
         UpdateRacePositions();
-
-        string text = "Racers:";
-        foreach (var racer in vehicles)
-        {
-            text += $"\n{racer.transform.gameObject.name} | POSITION {racer.racePosition} | LAP {racer.lapCount} | CHECKPOINT {racer.checkpointPosition} | PROGRESS {racer.progress}";
-        }
-
-        if(DEBUG_DRAW_RACERS_STATUS != null)
-            DEBUG_DRAW_RACERS_STATUS.text = text;
     }
     protected void UpdateRacePositions()
     {
@@ -192,8 +192,15 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         {
             if(racer.GetCheckpoint().next.HasVehiclePassed(racer.transform))
             {
-                if(racer.GetCheckpoint().next.isLapFlag)
-                    racer.lapCount++; //HERE YOU CAN CHECK THE RULES TO SEE IF YOU WIN
+                if (racer.GetCheckpoint().next.isLapFlag)
+                {
+                    racer.lapCount++;
+                    if(racer.lapCount <= RaceManager.instance.lapCount)
+                    {
+                        winners.Add(racer);
+                        racer.timeFinishedRace = Time.timeSinceLevelLoad;
+                    }
+                }
 
                 racer.checkpointPosition = racer.GetCheckpoint().next.index;
             }
@@ -220,6 +227,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         public int checkpointPosition = 0; //Which checkpoint they are on
         public float progress; //How far they have made it from the last checkpoint
 
+        public float timeFinishedRace = -1;
         public Racer(Transform transform, int index)
         {
             this.index = index;

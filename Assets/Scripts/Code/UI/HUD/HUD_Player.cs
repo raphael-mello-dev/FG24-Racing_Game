@@ -12,6 +12,9 @@ public class HUD_Player : MonoBehaviour
     private TextMeshProUGUI _position_text;
     private TextMeshProUGUI _lap_text;
 
+    private int _playerCount;
+    private int _lapCount;
+
     private void Start()
     {
         _speed_text = CreateText("Speed");
@@ -19,8 +22,15 @@ public class HUD_Player : MonoBehaviour
         _lap_text = CreateText("Lap");
     
         _racer = CheckpointManager.instance.DEBUG_FOCUSED_RACER_INFO;
+        if(_racer == null)
+            _racer = CheckpointManager.GetRacerInfo(FindFirstObjectByType<CarController>().transform);
+
+        rigidbody = _racer.transform.GetComponent<Rigidbody>();
 
         UpdateText();
+
+        _playerCount = RaceManager.instance.racerCount;
+        _lapCount = RaceManager.instance.lapCount;
     }
 
 
@@ -30,9 +40,9 @@ public class HUD_Player : MonoBehaviour
     }
     public void UpdateText()
     {
-        _speed_text.text = $"{rigidbody.linearVelocity.magnitude} M/S";
-        _position_text.text = $"Position {_racer.racePosition} / ?";
-        _lap_text.text = $"Lap {_racer.lapCount} / ?";
+        _speed_text.text = string.Format("{0:N0} M/S", rigidbody.linearVelocity.magnitude);
+        _position_text.text = string.Format("Position {0} / {1}", _racer.racePosition, _playerCount);
+        _lap_text.text = string.Format("Lap {0} / {1}", _racer.lapCount, _lapCount);
     }
 
     public TextMeshProUGUI CreateText(string name)

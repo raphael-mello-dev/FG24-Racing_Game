@@ -25,6 +25,7 @@ public class CarController : MonoBehaviour
     [SerializeField] private float acceleration = 5000f;
     [SerializeField] private float deceleration = 2500f;
     [SerializeField] private float maxSpeed = 25f;
+    public float MaxSpeed { get { return maxSpeed; } private set { maxSpeed = value; } }
     [SerializeField] private AnimationCurve powerCurve;
 
     [SerializeField] private AnimationCurve frontWheelGripCurve;
