@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.Splines;
 
 public class RaceManager : SceneOnlySingleton<RaceManager>
-{
-    
+{    
     //Racers
     public int playerRacers = 1;
 
