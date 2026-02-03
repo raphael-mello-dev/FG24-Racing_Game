@@ -28,7 +28,7 @@ public class InputManager
     public InputManager()
     {
         controls = new Controls();
-        controls.Gameplay.Enable();
+        controls.Menu.Enable();
 
         controls.Gameplay.Pause.performed += PausePerformed;
         controls.Pause.Unpause.performed += UnpausePerformed;
@@ -57,13 +57,13 @@ public class InputManager
     {
         GameManager.Instance.StateManager.SwitchState<PauseState>();
         SwitchInputMap(InputMap.Pause);
-        //OnPause?.Invoke();
+        OnPause?.Invoke();
     }
 
     private void UnpausePerformed(InputAction.CallbackContext context)
     {
         GameManager.Instance.StateManager.SwitchState<GameplayState>();
         SwitchInputMap(InputMap.Gameplay);
-        //OnUnpause?.Invoke();
+        OnUnpause?.Invoke();
     }
 }

@@ -11,6 +11,8 @@ public class HUD_RaceStartCounter : MonoBehaviour
     {
         if (RaceSettingsManager.Instance.CurrentMode == RaceMode.Training)
         {
+            GameManager.Instance.StateManager.SwitchState<GameplayState>();
+            GameManager.Instance.InputManager.SwitchInputMap(InputMap.Gameplay);
             gameObject.SetActive(false);
             return;
         }
@@ -19,6 +21,7 @@ public class HUD_RaceStartCounter : MonoBehaviour
         {
             startText.text = "Start";
             GameManager.Instance.StateManager.SwitchState<GameplayState>();
+            GameManager.Instance.InputManager.SwitchInputMap(InputMap.Gameplay);
             StartCoroutine("RaceStart");
         }
         else

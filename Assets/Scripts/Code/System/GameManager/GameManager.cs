@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     // FSM instance for Game flow
     public StateMachine StateManager { get; private set; }
 
+    // 
+    public InputManager InputManager { get; private set; }
+
     // Game manager setup
     private void Awake()
     {
@@ -28,6 +31,7 @@ public class GameManager : MonoBehaviour
 
         StateManager = new StateMachine();
         StateManager.SwitchState<MenuState>();
+        InputManager = new InputManager();
 
         // Game manager getting able to travel through scenes
         DontDestroyOnLoad(gameObject);
