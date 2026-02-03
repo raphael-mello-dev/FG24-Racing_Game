@@ -17,7 +17,6 @@ using static CheckpointManager.Spline;
 
 public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 {
-
     public GameObject checkpointPrefab;
     public Transform checkpointParent;
     public CheckpointNode[] checkpoints;
@@ -34,13 +33,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
     public Racer DEBUG_FOCUSED_RACER_INFO;
 
-    
-
-
-    protected override void Awake()
-    {
-        base.Awake();
-    }
+    protected override void Awake() => base.Awake();
 
     protected override void Init()
     {
@@ -56,7 +49,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         ProceduralTrackGenerator gen = 
             FindFirstObjectByType<ProceduralTrackGenerator>();
 
-
         while(!gen.hasGenerated)
         {
             await Awaitable.EndOfFrameAsync();
@@ -71,7 +63,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         DEBUG_FOCUSED_RACER_INFO = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
     }
 
-
     [ContextMenu("Find All Nodes")]
     public void FindAllNodes()
     {
@@ -85,9 +76,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 Undo.RecordObject(node.gameObject, "pre");
             }
         }
-
-        
-
+                
         Array.Sort(nodes, (a, b) => a.gameObject.name.CompareTo(b.gameObject.name));
 
         AssignCheckpoints(nodes);
@@ -113,6 +102,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         GenerateCheckpoints(positions, interpolation);
 
     }
+
     public void GenerateCheckpoints(Vector3[] positions, int interpolation = 2)
     {
         foreach (var c in checkpoints)
@@ -120,8 +110,9 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             Destroy(c.gameObject);
         }
 
-            Spline spline = new Spline(positions, InterpolationType.Catmull);
+        Spline spline = new Spline(positions, InterpolationType.Catmull);
         List<CheckpointNode> checkpointList = new List<CheckpointNode>();
+        
         for (int i = 0; i < positions.Length; i++)
         {
             for (int j = 0; j < interpolation; j++)
@@ -177,7 +168,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
-
     private void Update()
     {
 
@@ -186,8 +176,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             {
                 point.DEBUG_TRANSFORM = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
             }
-
-        
 
         //Possibly add a timer so this isn't checked every frame.
         UpdateRacePositions();
@@ -215,6 +203,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             }
             racer.progress = racer.GetCheckpoint().next.GetVehicleProgress(racer.transform);
         }
+
         //Sort by progress
         Array.Sort(vehicles);
 
@@ -224,10 +213,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
-    private void EndRace()
-    {
-        RaceManager.instance.EndRace(winners.ToArray());
-    }
+    private void EndRace() => RaceManager.instance.EndRace(winners.ToArray());
 
     [Serializable]
     public class Racer : IComparable<Racer>
@@ -275,11 +261,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             return $"Position: {racePosition} / Lap {lapCount}";
         }
     }
-
-    
-
-
-
+        
     //Getter Functions
     public static int CheckpointIndex(int i)
     {
@@ -292,9 +274,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
     {
         return instance._racerTransformDictonary[self];
     }
-
-
-
 
     public struct Spline
     {
@@ -385,10 +364,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             return GetInterpolation(t);
         }
 
-
-
-        
-
         public enum InterpolationType
         {
             Linear,
@@ -405,7 +380,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 InterpolationType.Catmull => CatmullInterpolation(t)
             };
         }
-
 
         private Vector3 CatmullInterpolation(float t)
         {
@@ -442,7 +416,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 (-p0 + 3f * p1 - 3f * p2 + p3) * t3
             );
         }
-
 
         private Vector3 BrazierInterpolation(float t)
         {
@@ -488,7 +461,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 return _objects[GetIndexAt(x)];
             }
 
-
             public int GetIndexAt(float x)
             {
                 if (x <= 0)
@@ -531,8 +503,6 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
                 return a / b;
             }
-
         }
     }
-
 }
