@@ -21,7 +21,12 @@ public class CheckpointNode : MonoBehaviour
     public CheckpointManager.Racer DEBUG_TRANSFORM;
 
     protected Mesh _displayPlane;
-    //protected Plane _plane;
+    protected Plane _plane;
+
+    private void Start()
+    {
+        _plane = new Plane(GetForwardVector(), transform.position);
+    }
 
     public bool HasVehiclePassed(Transform vehicle)
     {
@@ -30,10 +35,8 @@ public class CheckpointNode : MonoBehaviour
     }
     public float GetVehicleProgress(Transform vehicle)
     {
-        Plane _plane = new Plane(GetForwardVector(), transform.position);
         Vector3 planePoint = _plane.ClosestPointOnPlane(vehicle.position);
         float progress = Vector3.Distance(planePoint, vehicle.position);
-        
         return progress;
     }
 
