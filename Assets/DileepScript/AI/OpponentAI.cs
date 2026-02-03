@@ -6,7 +6,7 @@ public class OpponentAI : MonoBehaviour
     public enum AIState { FollowLine, Overtake, Defend, Recover }
 
     [Header("References")]
-    public WaypointPath path;
+    public CheckpointManager.Racer path;
     public AISettings settings;
     public LayerMask carLayer;
     float logTimer;
@@ -30,8 +30,14 @@ public class OpponentAI : MonoBehaviour
         desiredSpeedJitter = Random.Range(-settings.speedJitter, settings.speedJitter);
         InvokeRepeating(nameof(ChangeJitter), 0.5f, settings.jitterChangeRate);
 
-        if(path == null)
-            path = FindFirstObjectByType<WaypointPath>();
+        //if(path == null)
+        //    path = FindFirstObjectByType<WaypointPath>();
+
+        //path = CheckpointManager.GetRacerInfo(transform);
+    }
+    private void Start()
+    {
+        path = CheckpointManager.GetRacerInfo(transform);
     }
 
     void ChangeJitter()
@@ -41,14 +47,17 @@ public class OpponentAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
+        //if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
 
-        if (path == null || settings == null || path.Count < 2 || car == null) return;
+        if (path == null || settings == null || car == null)
+        {
+            Debug.LogWarning("Something is missing from the AI");
+        }
 
         UpdateWaypointProgress();
         UpdateState();
 
-        var wp = path.GetPoint(currentIndex);
+        var wp = GetTarget(1);//.GetPoint(currentIndex);
         Debug.DrawLine(transform.position + Vector3.up, wp + Vector3.up, Color.green);
         logTimer += Time.fixedDeltaTime;
         if (logTimer > 0.25f)
@@ -82,16 +91,17 @@ public class OpponentAI : MonoBehaviour
 
     void UpdateWaypointProgress()
     {
-        Vector3 wp = path.GetPoint(currentIndex);
-        if (Vector3.Distance(transform.position, wp) < settings.reachDist)
-            currentIndex = (currentIndex + 1) % path.Count;
+        //Vector3 wp = path.GetCheckpoint().next.transform.position;
+        //if (Vector3.Distance(transform.position, wp) < settings.reachDist)
+            //currentIndex = (currentIndex + 1) % path.Count;
     }
 
     void UpdateState()
     {
         if (IsStuckOrWrongWay())
         {
-            state = AIState.Recover;
+            //state = AIState.Recover;
+            GetComponent<RaceRespawner>().Respawn();
             return;
         }
 
@@ -123,8 +133,8 @@ public class OpponentAI : MonoBehaviour
 
     Vector3 GetLookaheadTarget(int steps, float lateralOffsetMeters)
     {
-        Vector3 p0 = path.GetPoint(currentIndex + steps);
-        Vector3 p1 = path.GetPoint(currentIndex + steps + 1);
+        Vector3 p0 = GetTarget(steps);
+        Vector3 p1 = GetTarget(steps + 1);
 
         Vector3 dir = (p1 - p0);
         dir.y = 0;
@@ -149,7 +159,7 @@ public class OpponentAI : MonoBehaviour
 
     float ComputeDesiredSpeed()
     {
-        Vector3 ahead = path.GetPoint(currentIndex + settings.speedLookaheadSteps);
+        Vector3 ahead = GetTarget(1);
         Vector3 toAhead = ahead - transform.position;
         toAhead.y = 0;
 
@@ -237,7 +247,7 @@ public class OpponentAI : MonoBehaviour
 #if UNITY_EDITOR
     void OnDrawGizmosSelected()
     {
-        if (path == null || settings == null || path.Count < 2) return;
+        if (path == null || settings == null) return;
 
         Vector3 target = GetLookaheadTarget(settings.lookaheadSteps, currentLaneOffset);
         Gizmos.color = Color.white;
@@ -249,4 +259,19 @@ public class OpponentAI : MonoBehaviour
         Gizmos.DrawLine(SensorOrigin(settings.sensorSideOffset), SensorOrigin(settings.sensorSideOffset) + transform.forward * settings.sensorDistance);
     }
 #endif
+
+    public Vector3 GetTarget(int next)
+    {
+        CheckpointNode target = path.GetCheckpoint();
+        for (int i = 0; i < next; i++)
+        {
+            target = target.next;
+        }
+
+        return
+            //Vector3.Lerp(
+            //target.GetClosestPoint(transform.position),
+            target.transform.position;//, 0.5f);
+    }
+
 }

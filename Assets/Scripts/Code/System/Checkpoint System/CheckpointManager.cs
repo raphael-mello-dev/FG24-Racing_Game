@@ -103,7 +103,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
-    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 1)
+    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 2)
     {
         Vector3[] positions = new Vector3[transforms.Length];
         for(int i = 0; i < transforms.Length; i++)
@@ -113,7 +113,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         GenerateCheckpoints(positions, interpolation);
 
     }
-    public void GenerateCheckpoints(Vector3[] positions, int interpolation = 1)
+    public void GenerateCheckpoints(Vector3[] positions, int interpolation = 2)
     {
         foreach (var c in checkpoints)
         {

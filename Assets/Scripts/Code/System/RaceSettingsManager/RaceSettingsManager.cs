@@ -41,5 +41,5 @@ public class RaceSettingsManager : MonoBehaviour
         }
     }
 
-    public void GetRaceMode(int mode) => CurrentMode = (RaceMode) mode;
+    public static void GetRaceMode(int mode) => Instance.CurrentMode = (RaceMode) mode;
 }

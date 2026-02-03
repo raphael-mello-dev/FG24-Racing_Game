@@ -28,6 +28,10 @@ public class CheckpointNode : MonoBehaviour
         _plane = new Plane(GetForwardVector(), transform.position);
     }
 
+    public Vector3 GetClosestPoint(Vector3 current)
+    {
+        return _plane.ClosestPointOnPlane(current);
+    }
     public bool HasVehiclePassed(Transform vehicle)
     {
         Vector3 direction = transform.position - vehicle.position;
@@ -35,7 +39,7 @@ public class CheckpointNode : MonoBehaviour
     }
     public float GetVehicleProgress(Transform vehicle)
     {
-        Vector3 planePoint = _plane.ClosestPointOnPlane(vehicle.position);
+        Vector3 planePoint = GetClosestPoint(vehicle.position);
         float progress = Vector3.Distance(planePoint, vehicle.position);
         return progress;
     }

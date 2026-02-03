@@ -61,6 +61,7 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 282753274773216957, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
     - {fileID: 6326200293541320418, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
+    - {fileID: 4467182093725793259, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4880621059584907081, guid: fe6c9d7a0d9b42a4aa773dfe436ca492, type: 3}
@@ -87,7 +88,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cdae5dc0d94e1d429d90bd4382e7efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  path: {fileID: 0}
+  path:
+    transform: {fileID: 0}
+    index: 0
+    racePosition: 0
+    lapCount: 0
+    checkpointPosition: 0
+    progress: 0
+    timeFinishedRace: 0
   settings: {fileID: 11400000, guid: 8e58aa973ecda604c8ff2a0bd73642d0, type: 2}
   carLayer:
     serializedVersion: 2

@@ -9,7 +9,8 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
     //Racers
     public int playerRacers = 1;
 
-    public int racerCount { get; private set; } 
+    public int racerCount;
+        
     private int maxPlayerCount = 1;
 
     public GameObject playerPrefab;
@@ -60,9 +61,15 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
 
         Transform[] list = new Transform[racerCount];
 
+        int aiNum = 0;
         for (int i = 0; i < list.Length; i++)
         {
-            list[i] = Instantiate(i < playerRacers ? playerPrefab : AiPrefab).transform;
+            bool isPlayer = i < playerRacers;
+
+            list[i] = Instantiate(isPlayer ? playerPrefab : AiPrefab).transform;
+            if(!isPlayer)
+                aiNum++;
+            //list[i].gameObject.name = isPlayer ? "Player" : $"AI {aiNum}";
         }
 
         int index = 0;

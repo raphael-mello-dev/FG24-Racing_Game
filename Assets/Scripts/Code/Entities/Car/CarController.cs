@@ -64,8 +64,8 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState"
-            && RaceSettingsManager.Instance.CurrentMode != RaceMode.Training) return;
+        //if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState"
+            //&& RaceSettingsManager.Instance.CurrentMode != RaceMode.Training) return;
 
         int i = 0;
 
