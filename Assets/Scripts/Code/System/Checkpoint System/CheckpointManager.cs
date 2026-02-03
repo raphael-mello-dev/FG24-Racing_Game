@@ -34,6 +34,8 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
 
     public Racer DEBUG_FOCUSED_RACER_INFO;
 
+    
+
 
     protected override void Awake()
     {
@@ -46,17 +48,29 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             return;
         base.Init();
 
-        
+        _ = SpawnRacers();        
+    }
 
-        FindAllNodes();
+    public async Awaitable SpawnRacers()
+    {
+        ProceduralTrackGenerator gen = 
+            FindFirstObjectByType<ProceduralTrackGenerator>();
+
+
+        while(!gen.hasGenerated)
+        {
+            await Awaitable.EndOfFrameAsync();
+        }
+
+        if(checkpoints.Length == 0)
+            FindAllNodes(); 
         AssignRacers(FindFirstObjectByType<RaceManager>().SpawnRacers());
 
         if (DEBUG_FOCUSED_RACER == null)
             DEBUG_FOCUSED_RACER = FindFirstObjectByType<CarController>().transform;
         DEBUG_FOCUSED_RACER_INFO = _racerTransformDictonary[DEBUG_FOCUSED_RACER];
-
-        
     }
+
 
     [ContextMenu("Find All Nodes")]
     public void FindAllNodes()
@@ -89,49 +103,41 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         }
     }
 
-    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 2)
+    public void GenerateCheckpoints(Transform[] transforms, int interpolation = 1)
     {
-
-        Spline spline = new Spline(transforms, InterpolationType.Catmull);
-        List<CheckpointNode> checkpoints = new List<CheckpointNode>();
-        for (int i = 0; i < transforms.Length; i++) 
+        Vector3[] positions = new Vector3[transforms.Length];
+        for(int i = 0; i < transforms.Length; i++)
         {
-            for(int j = 0; j < interpolation; j++)
-            {
-                Vector3 position = spline.GetPointAtIndex(i+ (float)j/(float)interpolation);
-                checkpoints.Add(MakeCheckpoint(position + Vector3.up * 10));
-            }
+            positions[i] = transforms[i].position;
         }
+        GenerateCheckpoints(positions, interpolation);
 
-        for (int i = 0; i < checkpoints.Count; i++)
-        {
-            checkpoints[i].gameObject.name = "Checkpoint - " + i;
-        }
-        checkpoints.First().isLapFlag = true;
-
-        AssignCheckpoints(checkpoints.ToArray());
     }
-    public void GenerateCheckpoints(Vector3[] positions, int interpolation = 3)
+    public void GenerateCheckpoints(Vector3[] positions, int interpolation = 1)
     {
+        foreach (var c in checkpoints)
+        {
+            Destroy(c.gameObject);
+        }
 
-        Spline spline = new Spline(positions, InterpolationType.Catmull);
-        List<CheckpointNode> checkpoints = new List<CheckpointNode>();
+            Spline spline = new Spline(positions, InterpolationType.Catmull);
+        List<CheckpointNode> checkpointList = new List<CheckpointNode>();
         for (int i = 0; i < positions.Length; i++)
         {
             for (int j = 0; j < interpolation; j++)
             {
                 Vector3 position = spline.GetPointAtIndex(i + (float)j / (float)interpolation);
-                checkpoints.Add(MakeCheckpoint(position + Vector3.up * 10));
+                checkpointList.Add(MakeCheckpoint(position + Vector3.up * 10));
             }
         }
-        for(int i = 0; i < checkpoints.Count; i++)
+        for(int i = 0; i < checkpointList.Count; i++)
         {
-            checkpoints[i].gameObject.name = "Checkpoint - " + i;
+            checkpointList[i].gameObject.name = "Checkpoint - " + i;
         }
 
-        checkpoints.First().isLapFlag = true;
+        checkpointList.First().isLapFlag = true;
 
-        AssignCheckpoints(checkpoints.ToArray());
+        AssignCheckpoints(checkpointList.ToArray());
     }
 
     private CheckpointNode MakeCheckpoint(Vector3 position)
@@ -195,10 +201,13 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 if (racer.GetCheckpoint().next.isLapFlag)
                 {
                     racer.lapCount++;
-                    if(racer.lapCount <= RaceManager.instance.lapCount)
+                    if(racer.timeFinishedRace == -1 && //Make sure they havent finished already
+                        racer.lapCount <= RaceManager.instance.lapCount)
                     {
                         winners.Add(racer);
                         racer.timeFinishedRace = Time.timeSinceLevelLoad;
+                        if (winners.Count == vehicles.Length)
+                            EndRace();
                     }
                 }
 
@@ -213,6 +222,11 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         {
             vehicles[i].racePosition = i + 1;
         }
+    }
+
+    private void EndRace()
+    {
+        RaceManager.instance.EndRace(winners.ToArray());
     }
 
     [Serializable]

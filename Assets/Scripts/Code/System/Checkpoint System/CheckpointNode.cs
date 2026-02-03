@@ -130,26 +130,14 @@ public class CheckpointNode : MonoBehaviour
             int check = DEBUG_TRANSFORM.checkpointPosition;
             bool current = index == CheckpointManager.CheckpointIndex(check);
             bool next = index == CheckpointManager.CheckpointIndex(check+1);
-            if (current || next)
-            { 
-                Gizmos.color = current ? Color.green : Color.red;
-                Gizmos.DrawWireMesh(_displayPlane, 0, transform.position, GetRotation(), transform.localScale);
-                //Gizmos.DrawSphere(transform.position, 1f)
-                /*
-                Gizmos.DrawSphere(planePoint, 1);
-                Gizmos.DrawLine(planePoint, DEBUG_TRANSFORM.transform.position);
-                */
-            }
-
-
-            
-
+            Gizmos.color = current ? Color.green : Color.yellow;
         }
+        Gizmos.DrawWireMesh(_displayPlane, 0, transform.position, GetRotation(), transform.localScale);
 
         if (isLapFlag)
         {
-            Vector3 pos = transform.position + new Vector3(0, transform.localScale.y+1);
-            Gizmos.DrawIcon(pos, "Flag",true);
+            Vector3 pos = transform.position + new Vector3(0, transform.localScale.y + 1);
+            Gizmos.DrawIcon(pos, "Flag", true);
         }
 
         

@@ -43,8 +43,8 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
         Vector3 fwd = transform.forward;
         float forwardSpeed = Vector3.Dot(vel, fwd);
 
-        if (Time.frameCount % 20 == 0)
-            Debug.Log($"STEER_IN={steer:F2} THR={throttle:F2} speed={rb.linearVelocity.magnitude:F2} angY={rb.angularVelocity.y:F2}");
+        //if (Time.frameCount % 20 == 0)
+        //    Debug.Log($"STEER_IN={steer:F2} THR={throttle:F2} speed={rb.linearVelocity.magnitude:F2} angY={rb.angularVelocity.y:F2}");
 
 
         if (speed < maxSpeedMps)
@@ -71,7 +71,7 @@ public class ArcadeCarController : MonoBehaviour, ICarInputs
        rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, angularDamping * Time.fixedDeltaTime);
 
         if (speed > 5f && throttle > 0.1f && steerAssist > 0f)
-      {
+        {
            Vector3 desiredVelDir = Vector3.Lerp(vel.normalized, fwd, steerAssist * Time.fixedDeltaTime).normalized;
             rb.linearVelocity = desiredVelDir * speed;
         }

@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -22,24 +24,37 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
 
     public int lapCount = 1;
 
-    protected override void Awake()
+    //End of race
+    public TextMeshProUGUI endOfRaceText;
+    public GameObject endOfRaceCanvas;
+
+    private void Start()
     {
-        base.Awake();
-        
-        if (RaceSettingsManager.Instance.CurrentMode == RaceMode.Custom)
-        {
-            trackPrefab.SetActive(false);
-            customTrackPrefab.SetActive(true);
-        }
-        else
-        {
-            trackPrefab.SetActive(true);
-            customTrackPrefab.SetActive(false);
-        }
+        endOfRaceCanvas.SetActive(false);
     }
+
+    protected override void Init()
+    {
+        base.Init();
+
+        bool custom = RaceSettingsManager.Instance.CurrentMode == RaceMode.Custom;
+        if (trackPrefab != null)
+            trackPrefab.SetActive(!custom);
+        if (customTrackPrefab != null)
+            customTrackPrefab.SetActive(custom);
+
+        roadSpline =
+        (custom ? customTrackPrefab : trackPrefab)
+        .GetComponent<SplineContainer>();
+    }
+
+
 
     public Transform[] SpawnRacers()
     {
+        if(!hasInit)
+            Init();
+
         playerRacers = Mathf.Clamp(playerRacers, 0, maxPlayerCount);    
         racerCount = playerRacers + RaceSettingsManager.Instance.CarsOpAmount;
 
@@ -77,5 +92,22 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
         trans.rotation = Quaternion.LookRotation(Quaternion.Euler(0, 0, 0) * tangent);
 
         trans.gameObject.SetActive(true);
+    }
+
+
+    public void EndRace(CheckpointManager.Racer[] winners)
+    {
+        endOfRaceCanvas.SetActive(true);
+        string text = "PLACEMENTS";
+        for (int i = 0; i < winners.Length; i++)
+        {
+            CheckpointManager.Racer racer = winners[i];
+            string name = racer.transform.gameObject.name;
+            int position = i + 1;
+            string time = TimeSpan.FromSeconds(racer.timeFinishedRace).ToString();
+            text += $"\n{position} <pos=70>| {name} \t <pos=350>| {time}";
+        }
+
+        endOfRaceText.text = text;
     }
 }

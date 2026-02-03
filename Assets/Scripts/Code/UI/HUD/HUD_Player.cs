@@ -20,12 +20,14 @@ public class HUD_Player : MonoBehaviour
         _speed_text = CreateText("Speed");
         _position_text = CreateText("Position");
         _lap_text = CreateText("Lap");
-    
-        _racer = CheckpointManager.instance.DEBUG_FOCUSED_RACER_INFO;
-        if(_racer == null)
-            _racer = CheckpointManager.GetRacerInfo(FindFirstObjectByType<CarController>().transform);
 
-        rigidbody = _racer.transform.GetComponent<Rigidbody>();
+        //_racer = CheckpointManager.instance.DEBUG_FOCUSED_RACER_INFO;
+        //if(_racer == null)
+        //    _racer = CheckpointManager.GetRacerInfo(FindFirstObjectByType<CarController>().transform);
+
+        rigidbody = GetComponentInParent<Rigidbody>();
+
+        _racer = CheckpointManager.GetRacerInfo(rigidbody.transform);
 
         UpdateText();
 

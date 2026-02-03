@@ -8,6 +8,10 @@ public class UIMainMenu : MonoBehaviour
         RaceSettingsManager.Instance.SetOponentsAmount();
         GameManager.Instance.LoadScene(Scenes.Gameplay);
     }
+    public void ToMainMenu()
+    {
+        GameManager.Instance.LoadScene(Scenes.MainMenu);
+    }
 
     public void ClickExit()
     {

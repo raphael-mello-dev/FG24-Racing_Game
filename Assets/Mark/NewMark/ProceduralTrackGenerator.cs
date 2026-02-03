@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -65,6 +66,8 @@ public class ProceduralTrackGenerator : MonoBehaviour
     private bool isInitialized;
     private System.Random rng;
 
+    [NonSerialized] public bool hasGenerated = false;
+
     public float Width
     {
         get => width;
@@ -78,6 +81,8 @@ public class ProceduralTrackGenerator : MonoBehaviour
             Generate();
         else
             RegenerateMesh();
+
+        hasGenerated = true;
     }
     private void OnEnable() => Initialize();
 
