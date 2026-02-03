@@ -1,15 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HUD_PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject panel;
-
-    [Header("Buttons")]
-    [SerializeField] private Button resumeButton;
-    [SerializeField] private Button retryButton;
-    [SerializeField] private Button menuButton;
-    [SerializeField] private Button exitButton;
 
     private void OnEnable()
     {
@@ -21,15 +14,6 @@ public class HUD_PauseMenu : MonoBehaviour
     {
         GameManager.Instance.InputManager.OnPause -= PauseMenuActivation;
         GameManager.Instance.InputManager.OnUnpause -= PauseMenuActivation;
-    }
-
-    private void Start()
-    {
-        resumeButton.onClick.AddListener(PauseMenuActivation);
-        resumeButton.onClick.AddListener(Resume);
-        retryButton.onClick.AddListener(ClickRetry);
-        menuButton.onClick.AddListener(ToMainMenu);
-        exitButton.onClick.AddListener(ClickExit);
     }
 
     public void PauseMenuActivation() => panel.SetActive(!panel.activeSelf);
@@ -44,6 +28,7 @@ public class HUD_PauseMenu : MonoBehaviour
     {
         GameManager.Instance.InputManager.SwitchInputMap(InputMap.Gameplay);
         GameManager.Instance.StateManager.SwitchState<GameplayState>();
+        Time.timeScale = 1.0f;
     }
 
     public void ClickRetry()

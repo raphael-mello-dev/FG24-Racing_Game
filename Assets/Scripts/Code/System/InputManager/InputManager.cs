@@ -57,6 +57,7 @@ public class InputManager
     {
         GameManager.Instance.StateManager.SwitchState<PauseState>();
         SwitchInputMap(InputMap.Pause);
+        Time.timeScale = 0f;
         OnPause?.Invoke();
     }
 
@@ -64,6 +65,7 @@ public class InputManager
     {
         GameManager.Instance.StateManager.SwitchState<GameplayState>();
         SwitchInputMap(InputMap.Gameplay);
+        Time.timeScale = 1f;
         OnUnpause?.Invoke();
     }
 }
