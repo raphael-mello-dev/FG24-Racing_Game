@@ -47,7 +47,7 @@ public class OpponentAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        //if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
+        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
 
         if (path == null || settings == null || car == null)
         {
