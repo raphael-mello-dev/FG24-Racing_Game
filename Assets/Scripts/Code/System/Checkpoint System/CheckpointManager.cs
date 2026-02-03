@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor;
-using UnityEditor.SceneManagement;
+
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 using static CheckpointManager.Spline;
 
 //------------------------------------------------------------------------
@@ -69,6 +72,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
         CheckpointNode[] nodes = 
             FindObjectsByType<CheckpointNode>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
+        #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
             foreach (var node in nodes)
@@ -76,12 +80,14 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
                 Undo.RecordObject(node.gameObject, "pre");
             }
         }
-                
+        #endif
+
         Array.Sort(nodes, (a, b) => a.gameObject.name.CompareTo(b.gameObject.name));
 
         AssignCheckpoints(nodes);
 
-        if(!Application.isPlaying)
+        #if UNITY_EDITOR
+        if (!Application.isPlaying)
         {
             foreach(var node in  nodes)
             {
@@ -90,6 +96,7 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
             }
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
+        #endif
     }
 
     public void GenerateCheckpoints(Transform[] transforms, int interpolation = 2)
