@@ -47,7 +47,7 @@ public class OpponentAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (GameManager.Instance.StateManager.currentState.ToString() != "GameplayState") return;
+        if (GameManager.Instance.StateManager.currentState is not GameplayState) return;
 
         if (path == null || settings == null || car == null)
         {
@@ -63,7 +63,7 @@ public class OpponentAI : MonoBehaviour
         if (logTimer > 0.25f)
         {
             logTimer = 0f;
-            Debug.Log($"Dist to WP[{currentIndex}] = {Vector3.Distance(transform.position, wp):F2}");
+            //Debug.Log($"Dist to WP[{currentIndex}] = {Vector3.Distance(transform.position, wp):F2}");
         }
 
         float targetOffset = ChooseLaneOffsetByState();

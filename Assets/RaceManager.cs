@@ -104,8 +104,10 @@ public class RaceManager : SceneOnlySingleton<RaceManager>
 
     public void EndRace(CheckpointManager.Racer[] winners)
     {
+        GameManager.Instance.StateManager.SwitchState<EndRaceState>();
         endOfRaceCanvas.SetActive(true);
-        string text = "PLACEMENTS";
+        string text = "\nPLACEMENTS\n";
+
         for (int i = 0; i < winners.Length; i++)
         {
             CheckpointManager.Racer racer = winners[i];

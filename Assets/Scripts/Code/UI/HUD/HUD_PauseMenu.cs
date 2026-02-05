@@ -1,8 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class HUD_PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject panel;
+    [SerializeField] private GameObject playerHUD;
 
     private void OnEnable()
     {
@@ -16,7 +18,19 @@ public class HUD_PauseMenu : MonoBehaviour
         GameManager.Instance.InputManager.OnUnpause -= PauseMenuActivation;
     }
 
-    public void PauseMenuActivation() => panel.SetActive(!panel.activeSelf);
+    private void Start() => StartCoroutine("GetPlayerHUD");
+
+    private IEnumerator GetPlayerHUD()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+        playerHUD = FindFirstObjectByType<HUD_Player>().gameObject;
+    }
+
+    public void PauseMenuActivation()
+    {
+        panel.SetActive(!panel.activeSelf);
+        playerHUD.SetActive(!playerHUD.activeSelf);
+    }
 
     public void ToMainMenu()
     {

@@ -189,20 +189,32 @@ public class CheckpointManager : SceneOnlySingleton<CheckpointManager>
     }
     protected void UpdateRacePositions()
     {
-        foreach(Racer racer in vehicles)
+
+        foreach (Racer racer in vehicles)
         {
             if(racer.GetCheckpoint().next.HasVehiclePassed(racer.transform))
             {
                 if (racer.GetCheckpoint().next.isLapFlag)
                 {
                     racer.lapCount++;
+
                     if(racer.timeFinishedRace == -1 && //Make sure they havent finished already
                         racer.lapCount <= RaceManager.instance.lapCount)
                     {
+                        if (RaceSettingsManager.Instance.CurrentMode == RaceMode.Training) break;
+                        
+                        if (racer.transform.GetComponent<CarController>() != null)
+                        {
+                            GameManager.Instance.InputManager.SwitchInputMap(InputMap.Menu);
+                            FindFirstObjectByType<HUD_Player>().gameObject.SetActive(false);
+                        }
+                        else
+                            racer.transform.gameObject.SetActive(false);
+
                         winners.Add(racer);
                         racer.timeFinishedRace = Time.timeSinceLevelLoad;
-                        if (winners.Count == vehicles.Length)
-                            EndRace();
+                        
+                        if (winners.Count == vehicles.Length) EndRace();
                     }
                 }
 
